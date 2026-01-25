@@ -46,9 +46,15 @@
         <image class="opening-photo" :src="openingImage" mode="aspectFill" lazy-load="true" />
 
         <div class="opening-bottom-info" :class="{ 'in-view': openingInView }">
+          <div class="overlay-info overlay-parents">
+            <span class="label">父亲</span> <strong class="highlight">莫尚态</strong>
+            <span class="separator">/</span>
+            <span class="label">母亲</span> <strong class="highlight">李桂华</strong>
+          </div>
           <div class="overlay-info"><span class="label">喜宴时间</span> <strong class="highlight">2026年02月24日 - 2026年02月25日</strong></div>
-          <div class="overlay-info"><span class="label">喜宴地址</span> <strong>仪陇县观紫镇大兴村四社</strong></div>
+          <div class="overlay-info"><span class="label">喜宴地址</span> <strong>四川省南充市仪陇县观紫镇大兴村四社</strong></div>
         </div>
+
 
 
 
@@ -1341,7 +1347,21 @@ onShareTimeline(() => {
     color: #b22222;
     font-weight: 800;
   }
+  .overlay-parents {
+    display: inline-flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 10rpx;
+    white-space: nowrap;
+  }
+  .overlay-parents .separator {
+    color: #b22222;
+    font-weight: 700;
+    opacity: 0.8;
+    padding: 0 4rpx;
+  }
 }
+
 
 
 
