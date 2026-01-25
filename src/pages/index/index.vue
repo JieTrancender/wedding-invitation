@@ -16,33 +16,70 @@
       <div class="cover-content">
         <h1 class="couple-names">{{ info.name || '新郎 & 新娘' }}</h1>
         <p class="title-text">我们结婚啦！</p>
+
         <div class="scroll-hint">
+
           <span class="arrow">↓</span>
           <span class="arrow arrow-secondary">↓</span>
         </div>
+
 
       </div>
     </div>
 
     <view id="content-start"></view>
 
-    <!-- 爱情故事 -->
-    <div v-if="storyList && storyList.length > 0" class="section section-story">
-
-      <div class="section-header">
-        <h2 class="section-title">爱情故事</h2>
-        <div class="section-line"></div>
-      </div>
-      <div class="story-timeline">
-        <div v-for="(item, index) in storyList" :key="index" class="story-item" :class="index % 2 === 0 ? 'left' : 'right'">
-          <div class="story-time">{{ item.date }}</div>
-          <div class="story-content">
-            <image :src="item.url" class="story-photo" mode="aspectFill" />
-            <p class="story-desc">{{ item.desc }}</p>
+    <!-- 开场文案 -->
+    <div class="section section-opening">
+      <div class="opening">
+        <div class="opening-timeline">
+          <div class="opening-row">
+            <span class="opening-time">2013.01.01</span>
+            <span class="opening-desc">高中走廊</span>
+          </div>
+          <div class="opening-row">
+            <span class="opening-time">2017.02.02</span>
+            <span class="opening-desc">大学心动</span>
+          </div>
+          <div class="opening-row">
+            <span class="opening-time">2025.12.31</span>
+            <span class="opening-desc">法律意义上的我们</span>
+          </div>
+          <div class="opening-row">
+            <span class="opening-time">2026.02.24</span>
+            <span class="opening-desc">请你来见证爱的庆典</span>
           </div>
         </div>
+        <div class="opening-text">
+          <p>从课桌到婚书，我们走了九年。</p>
+          <p>那年没敢递出的情书，</p>
+          <p>今天请你来读结局。</p>
+        </div>
+
       </div>
     </div>
+
+    <div v-if="storyList && storyList.length > 0" class="section section-story">
+      <div class="story-timeline">
+        <div v-for="(item, index) in storyList" :key="index" class="story-item" :class="index % 2 === 0 ? 'left' : 'right'">
+          <div class="story-card" @touchstart="(e) => onStoryTouchStart(index, e)" @touchend="(e) => onStoryTouchEnd(index, e)">
+            <image :src="item.url" class="story-photo" mode="aspectFill" @load="markStoryLoaded(index)" />
+            <p
+              class="story-desc-overlay"
+              :class="{ 'story-desc-show': storyLoaded[index] && !storyHidden[index] }"
+            >
+              {{ item.desc }}
+              <span class="story-arrow" v-if="storyLoaded[index] && !storyHidden[index]">→ 向右隐藏</span>
+            </p>
+
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
 
     <!-- 婚礼信息 -->
     <div class="section section-info">
@@ -161,7 +198,12 @@ const info = ref<any>({})
 const coverImage = ref('')
 const musicUrl = ref('')
 const storyList = ref<any[]>([])
+const storyLoaded = ref<boolean[]>([])
+const storyHidden = ref<boolean[]>([])
+const touchStartX = ref<number[]>([])
 const isPlaying = ref(false)
+
+
 
 // 表单数据
 const form = ref({
@@ -247,7 +289,17 @@ const loadData = () => {
   // 获取爱情故事
   getResouces('love-story').then(res => {
     storyList.value = res.data || []
+    storyLoaded.value = storyList.value.map(() => false)
+    storyHidden.value = storyList.value.map(() => false)
+    touchStartX.value = storyList.value.map(() => 0)
+    // 轻微延迟触发动画，避免图片缓存瞬间加载看不到过渡
+    setTimeout(() => {
+      storyLoaded.value = storyList.value.map(() => true)
+    }, 200)
   })
+
+
+
 
   // 获取统计数据（需要提供openid）
   const openId = instance?.appContext.config.globalProperties.$MpUserData?.openid
@@ -388,6 +440,27 @@ const submitForm = async () => {
   }
 }
 
+const markStoryLoaded = (index: number) => {
+  storyLoaded.value[index] = true
+}
+
+const onStoryTouchStart = (index: number, e: any) => {
+  const x = e.touches?.[0]?.clientX || 0
+  touchStartX.value[index] = x
+}
+
+const onStoryTouchEnd = (index: number, e: any) => {
+  const x = e.changedTouches?.[0]?.clientX || 0
+  const delta = x - touchStartX.value[index]
+  // 右滑隐藏，左滑显示
+  if (delta > 40) {
+    storyHidden.value[index] = true
+  } else if (delta < -40) {
+    storyHidden.value[index] = false
+  }
+}
+
+
 const formatDateTime = (dateTime: any) => {
   if (!dateTime) return ''
   const date = new Date(dateTime)
@@ -399,6 +472,7 @@ const formatDateTime = (dateTime: any) => {
   const mm = `${date.getMinutes()}`.padStart(2, '0')
   return `${y}-${m}-${d} ${hh}:${mm}`
 }
+
 
 // 格式化日期
 const formatDate = (date: any) => {
@@ -502,17 +576,8 @@ onShareTimeline(() => {
 .section {
   padding: 60rpx 40rpx;
   position: relative;
-  &:not(:last-child)::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 2rpx;
-    height: 80rpx;
-    background: linear-gradient(180deg, #ff4c91, transparent);
-  }
 }
+
 
 .section-header {
   text-align: center;
@@ -530,6 +595,68 @@ onShareTimeline(() => {
     margin: 0 auto;
   }
 }
+
+.section-opening {
+  padding: 40rpx 40rpx 20rpx;
+}
+
+.opening {
+  background: transparent;
+  border-radius: 0;
+  padding: 20rpx 0 10rpx;
+  box-shadow: none;
+  color: #333;
+  max-width: 900rpx;
+  margin: 0 auto;
+}
+
+.opening-timeline {
+  display: grid;
+  gap: 16rpx;
+  margin: 0 auto 18rpx;
+  text-align: left;
+  width: fit-content;
+  max-width: 900rpx;
+}
+
+
+.opening-row {
+  display: flex;
+  justify-content: flex-start;
+  gap: 18rpx;
+  align-items: baseline;
+  font-size: 34rpx;
+  line-height: 1.7;
+}
+
+.opening-time {
+  min-width: 240rpx;
+  text-align: left;
+  font-weight: 800;
+  color: #ff4c91;
+}
+
+.opening-desc {
+  text-align: left;
+  color: #333;
+  font-weight: 700;
+}
+
+
+.opening-text {
+  font-size: 34rpx;
+  line-height: 1.9;
+  color: #222;
+  text-align: center;
+  p {
+    margin: 10rpx 0;
+  }
+}
+
+
+
+
+
 
 /* 封面 */
 .section-cover {
@@ -569,7 +696,7 @@ onShareTimeline(() => {
       font-size: 40rpx;
       color: #fff;
       font-weight: 600;
-      margin-bottom: 44rpx;
+      margin-bottom: 32rpx;
       padding: 10rpx 24rpx;
       display: inline-block;
       border-radius: 999rpx;
@@ -577,6 +704,8 @@ onShareTimeline(() => {
       text-shadow: 0 6rpx 16rpx rgba(0, 0, 0, 0.4);
     }
     .scroll-hint {
+
+
       margin-top: 52rpx;
       display: flex;
       flex-direction: column;
@@ -626,8 +755,8 @@ onShareTimeline(() => {
 /* 爱情故事 */
 .story-timeline {
   display: grid;
-  gap: 32rpx;
-  padding: 20rpx 0 10rpx;
+  gap: 48rpx;
+  padding: 0;
 }
 
 .story-item {
@@ -639,34 +768,69 @@ onShareTimeline(() => {
     text-align: center;
   }
   .story-time {
-    font-size: 28rpx;
-    color: #ff4c91;
-    font-weight: bold;
-    margin-bottom: 16rpx;
+    display: none;
   }
+
   .story-content {
-    background: linear-gradient(180deg, #fff, #fff6f9);
-    padding: 28rpx;
-    border-radius: 20rpx;
-    box-shadow: 0 12rpx 32rpx rgba(255, 76, 145, 0.12);
+    width: 100%;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 18rpx;
   }
+  .story-card {
+    position: relative;
+    width: 100%;
+    height: 70vh;
+    overflow: hidden;
+  }
   .story-photo {
     width: 100%;
-    max-width: 620rpx;
-    height: 520rpx;
-    border-radius: 16rpx;
+    height: 100%;
+    max-width: none;
+    border-radius: 0;
     object-fit: cover;
+    display: block;
   }
+  .story-desc-overlay {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 36rpx 32rpx 64rpx;
+    font-size: 36rpx;
+    font-weight: 700;
+    line-height: 1.9;
+    color: #fff;
+    letter-spacing: 1rpx;
+    background: linear-gradient(180deg, transparent 20%, rgba(0, 0, 0, 0.75));
+    opacity: 0;
+    transform: translateY(18rpx);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+  }
+  .story-desc-show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .story-arrow {
+    position: absolute;
+    right: 28rpx;
+    bottom: 18rpx;
+    font-size: 30rpx;
+    opacity: 0.85;
+  }
+
+
+
   .story-desc {
-    font-size: 28rpx;
-    color: #555;
-    line-height: 1.7;
+    display: none;
   }
 }
+
+
 
 /* 婚礼信息 */
 
