@@ -1,5 +1,5 @@
 {
-  "name": "",
+  "name": "莫杰&罗静 婚礼邀请函",
   "appid": "",
   "description": "",
   "versionName": "1.0.0",
@@ -50,7 +50,7 @@
   "quickapp": {},
   /* 小程序特有相关 */
   "mp-weixin": {
-    "appid": "",
+    "appid": "wxa020bb825fc38cc6",
     "setting": {
       "urlCheck": false
     },

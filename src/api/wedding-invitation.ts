@@ -25,7 +25,7 @@ export function getCommonConfig() {
  * 获取资源配置
  * @returns
  */
-export function getResouces(type: 'music' | 'photo-banner' | 'index-banner') {
+export function getResouces(type: 'music' | 'photo-banner' | 'index-banner' | 'wedding-cover' | 'love-story') {
   return http.request({
     url: '/api/wedding-invitation/getResouces',
     method: 'GET',
@@ -161,16 +161,20 @@ export function getFriendUserList() {
 
 /**
  * 获取出席数据列表
+ * @param openid 用户openid
  * @returns
  */
-export function getPresentList(openid?) {
+export function getPresentList(openid?: string) {
+  const params: any = {
+    userId: import.meta.env.VITE_VUE_APP_USERID as string
+  }
+  if (openid) {
+    params.openid = openid
+  }
   return http.request({
     url: '/api/wedding-invitation/getPresentList',
     method: 'GET',
-    params: {
-      openid,
-      userId: import.meta.env.VITE_VUE_APP_USERID as string
-    }
+    params
   })
 }
 
@@ -190,18 +194,35 @@ export function addOrUpdatePresent(data) {
 }
 /**
  * 根据 jsCode 换取用户 openId
- * @param jsCodeMP
+ * @param jsCodeMP 微信登录code
+ * @param userInfo 可选用户信息 { nickName?: string, avatarUrl?: string }
  * @returns
  */
-export function code2Session(jsCodeMP: string) {
-  return http.request({
-    url: '/api/wechat/code2Session',
-    method: 'GET',
-    params: {
-      jsCodeMP,
-      userId: import.meta.env.VITE_VUE_APP_USERID as string
-    }
-  })
+export function code2Session(jsCodeMP: string, userInfo?: { nickName?: string, avatarUrl?: string }) {
+  const params = {
+    jsCodeMP,
+    userId: import.meta.env.VITE_VUE_APP_USERID as string
+  }
+  
+  if (userInfo && (userInfo.nickName || userInfo.avatarUrl)) {
+    return http.request({
+      url: '/api/wechat/code2Session',
+      method: 'POST',
+      data: {
+        user: {
+          nickName: userInfo.nickName || '',
+          avatarUrl: userInfo.avatarUrl || ''
+        }
+      },
+      params
+    })
+  } else {
+    return http.request({
+      url: '/api/wechat/code2Session',
+      method: 'GET',
+      params
+    })
+  }
 }
 
 /**
@@ -216,7 +237,42 @@ export function uploadAvatar(filePath, formData) {
     name: 'file',
     formData,
     params: {
+      userId: import.meta.env.VUE_APP_USERID as string
+    }
+  })
+}
+
+/**
+ * 提交RSVP回执
+ * @param data
+ * @returns
+ */
+export function submitRSVP(data) {
+  return http.request({
+    url: '/api/wedding-invitation/submitRSVP',
+    method: 'POST',
+    data,
+    params: {
       userId: import.meta.env.VITE_VUE_APP_USERID as string
     }
+  })
+}
+
+/**
+ * 获取RSVP统计数据（仅管理员可见）
+ * @param openid 用户openid
+ * @returns
+ */
+export function getRsvpStats(openid?: string) {
+  const params: any = {
+    userId: import.meta.env.VITE_VUE_APP_USERID as string
+  }
+  if (openid) {
+    params.openid = openid
+  }
+  return http.request({
+    url: '/api/wedding-invitation/getRsvpStats',
+    method: 'GET',
+    params
   })
 }

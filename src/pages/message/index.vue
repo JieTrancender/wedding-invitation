@@ -138,7 +138,7 @@ const formRef = ref(null)
 const modalName = ref(null)
 const instance = getCurrentInstance()
 const globalData: GlobalData = instance.appContext.config.globalProperties.globalData
-openId.value = instance.appContext.config.globalProperties.$MpUserData?.openId
+openId.value = instance.appContext.config.globalProperties.$MpUserData?.openid
 
 const isAdmin = computed(() => {
   return adminsIds.value.indexOf(openId.value) !== -1
@@ -149,7 +149,7 @@ const avatarUrl = ref(
 )
 
 onShow(() => {
-  openId.value = instance.appContext.config.globalProperties.$MpUserData?.openId
+  openId.value = instance.appContext.config.globalProperties.$MpUserData?.openid
 
   getVideoUrl()
   isVideo.value = false
@@ -191,10 +191,10 @@ const onConfirm = e => {
   }
   modalName.value = null
 
-  const openId = instance.appContext.config.globalProperties.$MpUserData.openId
+  const openId = instance.appContext.config.globalProperties.$MpUserData.openid
 
   uploadAvatar(avatarUrl.value, {
-    openId: openId
+    openid: openId
   }).then(res => {
     addOrUpdateUser({
       openid: openId,
@@ -288,7 +288,7 @@ const sendMessage = () => {
         time: getNowFormatDate(),
         url: instance.appContext.config.globalProperties.$MpUserData?.user.avatarUrl,
         name: instance.appContext.config.globalProperties.$MpUserData?.user.nickName,
-        openid: instance.appContext.config.globalProperties.$MpUserData.openId
+        openid: instance.appContext.config.globalProperties.$MpUserData.openid
       }).then(res => {
         isOpen.value = false
         desc.value = ''
@@ -535,7 +535,8 @@ const getFromlist = () => {
         })
       })
   } else {
-    getPresentList().then(res => {
+    // 传递当前用户的openid，后端会根据权限过滤数据
+    getPresentList(openId.value).then(res => {
       formList.value = res.data.reverse().map(x => {
         return {
           count: x.count,

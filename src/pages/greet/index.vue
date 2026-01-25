@@ -112,7 +112,7 @@ const onConfirm = e => {
   }
   modalName.value = null
 
-  const openId = instance.appContext.config.globalProperties.$MpUserData.openId
+  const openId = instance.appContext.config.globalProperties.$MpUserData.openid
   uploadAvatar(avatarUrl.value, {
     openId
   }).then(res => {

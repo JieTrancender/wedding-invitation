@@ -64,7 +64,7 @@ const _id = ref('')
 
 const instance = getCurrentInstance()
 const $emit = defineEmits(['closeForm'])
-const openId = instance.appContext.config.globalProperties.$MpUserData?.openId
+const openId = instance.appContext.config.globalProperties.$MpUserData?.openid
 
 const cancel = () => {
   $emit('closeForm')
@@ -144,18 +144,31 @@ const addPresent = () => {
         })
     }
   } else {
+    // 获取最新的 openid
+    const currentOpenId = instance.appContext.config.globalProperties.$MpUserData?.openid
+    console.log('提交表单时的 openid:', currentOpenId)
+
+    if (!currentOpenId) {
+      console.error('无法获取 openid，用户数据:', instance.appContext.config.globalProperties.$MpUserData)
+      showToast('用户信息获取失败，请关闭小程序重新进入')
+      return
+    }
+
     addOrUpdatePresent({
       name: name.value,
       phone: phone.value,
       count: count.value,
       desc: desc.value,
-      openid: openId
+      openid: currentOpenId
     }).then(res => {
       name.value = ''
       phone.value = ''
       count.value = '自己出席'
       desc.value = ''
       $emit('closeForm')
+    }).catch(err => {
+      console.error('提交回执失败:', err)
+      showToast('提交失败，请重试')
     })
   }
 }
