@@ -75,25 +75,110 @@
       </div>
     </div>
 
-    <!-- 开场大图 + 文案（第四屏） -->
+    <!-- 开场大图 + 文案（第四屏，对称布局） -->
     <div class="section section-opening section-opening-3 snap-section">
-      <div class="opening-layout opening-layout-2">
-        <div class="opening-top-text" :class="{ 'in-view': openingInView3 }">
-          <p class="title-line">2025年12月31日</p>
-          <p>我们在岁末签下彼此的名字，</p>
-          <p>从此，新年第一天，</p>
-          <p>就是“我们”的第一天。</p>
-          <p>—— 法律上的我们，始于2025年末</p>
-        </div>
-
+      <div class="opening-layout opening-layout-2 opening-layout-3">
         <image class="opening-photo opening-photo-2" :src="openingImage3" mode="aspectFill" lazy-load="true" />
+        <div class="opening-top-text opening-top-text-3" :class="{ 'in-view': openingInView3 }">
+          <p class="title-line">2025年12月31日</p>
+          <p>我们在岁末签下彼此的名字</p>
+          <p>从此，新年第一天</p>
+          <p>就是“我们”的第一天</p>
+          <p>—— 法律上的我们，始于2025年末</p>
 
+        </div>
+      </div>
+    </div>
+
+    <!-- 开场大图 + 文案（第五屏：采用第二屏排版，图片在上文字在下） -->
+    <div class="section section-opening section-opening-4 snap-section">
+      <div class="opening-layout opening-layout-2 opening-layout-4">
+        <image class="opening-photo opening-photo-2 opening-photo-4" :src="openingImage4" mode="aspectFill" lazy-load="true" />
+        <div class="opening-top-text opening-top-text-4" :class="{ 'in-view': openingInView4 }">
+          <p class="title-line">九年相守，一日成婚，一生白首</p>
+          <p>从2017年元旦的第一句“我们”</p>
+          <p>到2026年初春的这场郑重相约</p>
+          <p>时光未改初心，岁月愈见深情</p>
+          <p>愿与你晨昏共度，青丝成雪</p>
+          <p>不负这九年等待，更不负余生每一日</p>
+          <p>—— 相恋九年，余生皆你</p>
+        </div>
       </div>
     </div>
 
 
 
+
+
+
+
+    <!-- 第六屏：上图、中间文案、下方宾客回执 -->
+    <div class="section section-opening section-opening-5 snap-section">
+      <div class="opening-layout opening-layout-5-copy">
+        <image class="opening-photo opening-photo-5-copy" :src="openingImage5" mode="aspectFill" lazy-load="true" />
+
+        <div class="rsvp-inline">
+          <div class="opening-top-text opening-top-text-5-copy" :class="{ 'in-view': openingInView5 }">
+            <p>一日叙旧，亲朋共话往昔</p>
+            <p>一日盟誓，山海同证此心</p>
+            <p>恭候莅临，共度春初最温柔的两天</p>
+          </div>
+
+          <div class="rsvp-form">
+
+            <div class="form-item form-inline">
+              <label class="form-label">姓名 <span class="required">*</span></label>
+              <input v-model="form.name" class="form-input" placeholder="请输入您的姓名" />
+            </div>
+            <div class="form-item form-inline">
+              <label class="form-label">是否出席 <span class="required">*</span></label>
+              <radio-group class="radio-group inline" @change="onAttendChange">
+                <label class="radio-item">
+                  <radio value="1" :checked="form.attend" color="#ff4c91" />
+                  <span>是</span>
+                </label>
+                <label class="radio-item">
+                  <radio value="0" :checked="!form.attend" color="#ff4c91" />
+                  <span>否</span>
+                </label>
+              </radio-group>
+            </div>
+
+
+
+            <div class="form-item">
+              <textarea v-model="form.message" class="form-textarea form-textarea-double" placeholder="请留下您的祝福..." maxlength="200" />
+            </div>
+
+
+
+
+            <button class="submit-btn" @tap="submitForm">提交回执</button>
+            <button class="share-btn-inline" open-type="share">
+              <span class="btn-icon">📤</span>
+              <span>转发给其他亲友</span>
+            </button>
+          </div>
+
+          <div v-if="showStats" class="stats-card stats-inline">
+            <span class="stat-inline-text">总回执：{{ stats.total || 0 }}</span>
+            <span class="stat-inline-text">出席：{{ stats.attend || 0 }}</span>
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+
+
+
+
+
     <div class="section section-story-intro snap-section">
+
+
+
+
 
 
 
@@ -186,58 +271,7 @@
       </div>
     </div>
 
-    <!-- 宾客互动区 -->
-    <div class="section section-rsvp">
-      <div class="section-header">
-        <h2 class="section-title">宾客回执</h2>
-        <div class="section-line"></div>
-      </div>
-      <div class="rsvp-form">
-        <div class="form-item">
-          <label class="form-label">姓名 <span class="required">*</span></label>
-          <input v-model="form.name" class="form-input" placeholder="请输入您的姓名" />
-        </div>
-        <div class="form-item">
-          <label class="form-label">是否出席 <span class="required">*</span></label>
-          <radio-group class="radio-group" @change="onAttendChange">
-            <label class="radio-item">
-              <radio value="1" :checked="form.attend" color="#ff4c91" />
-              <span>是</span>
-            </label>
-            <label class="radio-item">
-              <radio value="0" :checked="!form.attend" color="#ff4c91" />
-              <span>否</span>
-            </label>
-          </radio-group>
-        </div>
 
-        <div v-if="form.attend" class="form-item">
-          <label class="form-label">出席人数 <span class="required">*</span></label>
-          <input v-model.number="form.peopleCount" type="number" class="form-input" placeholder="请输入出席人数" />
-        </div>
-        <div class="form-item">
-          <label class="form-label">祝福留言</label>
-          <textarea v-model="form.message" class="form-textarea" placeholder="请留下您的祝福..." maxlength="200" />
-        </div>
-        <button class="submit-btn" @tap="submitForm">提交回执</button>
-      </div>
-
-      <!-- 统计信息（仅管理员可见） -->
-      <div v-if="showStats" class="stats-card">
-        <div class="stat-item">
-          <div class="stat-number">{{ stats.total || 0 }}</div>
-          <div class="stat-label">总回执</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-number">{{ stats.attend || 0 }}</div>
-          <div class="stat-label">出席</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-number">{{ stats.people || 0 }}</div>
-          <div class="stat-label">总人数</div>
-        </div>
-      </div>
-    </div>
 
     <!-- 尾页 & 分享引导 -->
     <div class="section section-footer">
@@ -281,13 +315,26 @@ const snapEnabled = ref(true)
 const openingImage = 'https://klife.keyboard-man.com/wedding_invitation/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20260124150433_234_980.jpg?imageslim/zlevel/3'
 const openingImage2 = 'https://klife.keyboard-man.com/wedding_invitation/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20260123172039_160_980.jpg?imageslim/zlevel/3'
 const openingImage3 = 'https://klife.keyboard-man.com/wedding_invitation/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20260123172427_164_980.jpg?imageslim/zlevel/3'
+const openingImage4 = 'https://klife.keyboard-man.com/wedding_invitation/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20260123172430_167_980.jpg?imageslim/zlevel/3'
+const openingImage5 = 'https://klife.keyboard-man.com/wedding_invitation/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20260124150340_233_980.jpg?imageslim/zlevel/3'
+
 
 const openingInView = ref(false)
+
 const openingInView2 = ref(false)
 const openingInView3 = ref(false)
+const openingInView4 = ref(false)
+const openingInView5 = ref(false)
+
 let openingObserver: UniApp.IntersectionObserver | null = null
 let openingObserver2: UniApp.IntersectionObserver | null = null
 let openingObserver3: UniApp.IntersectionObserver | null = null
+let openingObserver4: UniApp.IntersectionObserver | null = null
+let openingObserver5: UniApp.IntersectionObserver | null = null
+
+
+
+
 
 
 
@@ -318,8 +365,29 @@ const handleOpeningInView3 = () => {
   }
 }
 
+const handleOpeningInView4 = () => {
+  if (openingInView4.value) return
+  openingInView4.value = true
+  if (openingObserver4) {
+    openingObserver4.disconnect()
+    openingObserver4 = null
+  }
+}
+
+const handleOpeningInView5 = () => {
+  if (openingInView5.value) return
+  openingInView5.value = true
+  if (openingObserver5) {
+    openingObserver5.disconnect()
+    openingObserver5 = null
+  }
+}
 
 // 表单数据
+
+
+
+
 
 
 
@@ -358,9 +426,17 @@ onMounted(() => {
   setupOpeningObserver()
   setupOpeningObserver2()
   setupOpeningObserver3()
+  setupOpeningObserver4()
+  setupOpeningObserver5()
   loadData()
   initAudio()
 })
+
+
+
+
+
+
 
 
 
@@ -379,7 +455,13 @@ onShow(() => {
   setupOpeningObserver()
   setupOpeningObserver2()
   setupOpeningObserver3()
+  setupOpeningObserver4()
+  setupOpeningObserver5()
 })
+
+
+
+
 
 
 
@@ -401,7 +483,19 @@ onUnmounted(() => {
     openingObserver3.disconnect()
     openingObserver3 = null
   }
+  if (openingObserver4) {
+    openingObserver4.disconnect()
+    openingObserver4 = null
+  }
+  if (openingObserver5) {
+    openingObserver5.disconnect()
+    openingObserver5 = null
+  }
 })
+
+
+
+
 
 
 
@@ -448,10 +542,43 @@ const setupOpeningObserver3 = () => {
   })
 }
 
+const setupOpeningObserver4 = () => {
+  if (openingObserver4) return
+  nextTick(() => {
+    openingObserver4 = uni.createIntersectionObserver(instance?.proxy, { thresholds: [0, 0.1, 0.2, 0.5] })
+    openingObserver4
+      .relativeToViewport({ top: 0, bottom: 0 })
+      .observe('.section-opening-4 .opening-layout', (res) => {
+        if (res.intersectionRatio > 0.1) {
+          handleOpeningInView4()
+        }
+      })
+  })
+}
+
+const setupOpeningObserver5 = () => {
+  if (openingObserver5) return
+  nextTick(() => {
+    openingObserver5 = uni.createIntersectionObserver(instance?.proxy, { thresholds: [0, 0.1, 0.2, 0.5] })
+    openingObserver5
+      .relativeToViewport({ top: 0, bottom: 0 })
+      .observe('.section-opening-5 .opening-layout', (res) => {
+        if (res.intersectionRatio > 0.1) {
+          handleOpeningInView5()
+        }
+      })
+  })
+}
+
+
+
+
+
 
 
 
 const loadData = () => {
+
 
   // 获取婚礼信息
   if (import.meta.env.VITE_VUE_WECHAT_TCB === 'true') {
@@ -821,6 +948,29 @@ onShareTimeline(() => {
   padding: 40rpx 24rpx 44rpx;
 }
 
+.section-opening-4 {
+  background: radial-gradient(140% 140% at 50% 10%, rgba(253, 248, 241, 0.95) 0%, rgba(245, 236, 228, 0.94) 45%, rgba(236, 224, 215, 0.95) 100%), #f9f4ed;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  gap: 0;
+}
+
+.section-opening-5 {
+  background: radial-gradient(120% 120% at 50% 20%, rgba(255, 235, 214, 0.9) 0%, rgba(246, 222, 214, 0.9) 50%, rgba(240, 210, 200, 0.92) 100%), #f5e9df;
+  padding: 40rpx 24rpx 44rpx;
+}
+
+
+
+
+
+
+
+
 
 
 
@@ -960,6 +1110,265 @@ onShareTimeline(() => {
     box-shadow: 0 18rpx 36rpx rgba(106, 54, 35, 0.22);
   }
 }
+
+/* 第四屏对称排版：图上文下、右对齐 */
+.opening-layout-3 {
+  gap: 22rpx;
+  align-items: start;
+  justify-items: end;
+  text-align: right;
+
+  .opening-photo-2 {
+    height: 50vh;
+    border-radius: 26rpx;
+    border: 5rpx solid rgba(255, 255, 255, 0.65);
+    box-shadow: 0 16rpx 32rpx rgba(84, 48, 32, 0.18);
+  }
+
+  .opening-top-text-3 {
+    padding: 0;
+    margin: 0;
+    border-left: none;
+    border-right: 8rpx solid #8a2c2c;
+    padding-right: 18rpx;
+    text-align: right;
+    align-self: stretch;
+    opacity: 0;
+    transform: translateY(14rpx);
+    &.in-view {
+      animation: fadeSoft 1s ease both;
+      opacity: 1;
+      transform: translateY(0);
+      p { white-space: normal; }
+      p:nth-child(1) { animation-delay: 0s; }
+      p:nth-child(2) { animation-delay: 0.2s; }
+      p:nth-child(3) { animation-delay: 0.4s; }
+      p:nth-child(4) { animation-delay: 0.6s; }
+      p:nth-child(5) { animation-delay: 0.8s; }
+      p:nth-child(6) { animation-delay: 1.0s; }
+      p:nth-child(7) { animation-delay: 1.2s; }
+      p:nth-child(8) { animation-delay: 1.4s; }
+      p:nth-child(9) { animation-delay: 1.6s; }
+    }
+    .title-line {
+      font-size: 36rpx;
+      letter-spacing: 1.4rpx;
+      color: #2f120e;
+      font-weight: 660;
+    }
+    p { margin: 10rpx 0 0; }
+  }
+}
+
+/* 第五屏：第二屏风格，图片上文字下 */
+.opening-layout-4 {
+  @extend .opening-layout-2;
+  width: 100%;
+  max-width: none;
+  gap: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  text-align: left;
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+}
+
+
+
+
+.opening-photo-4 {
+  width: 100%;
+  max-width: none;
+  height: 56vh;
+  object-fit: cover;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+
+/* 第五屏图片强制去圆角/阴影/空隙 */
+.section-opening-4 .opening-photo,
+.section-opening-4 .opening-photo-2,
+.section-opening-4 .opening-photo-4 {
+  width: 100% !important;
+  max-width: none !important;
+  height: 56vh;
+  object-fit: cover;
+  border-radius: 0 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: block;
+}
+
+
+
+
+
+
+
+.opening-layout-4 .opening-top-text,
+.opening-layout-4 .opening-top-text-4 {
+  padding: 0 24rpx;
+  margin: 14rpx auto 0;
+  max-width: 92vw;
+  text-align: left;
+  border-left: none;
+  padding-left: 0;
+  opacity: 0;
+  transform: translateY(14rpx);
+  line-height: 1.74;
+  letter-spacing: 0.8rpx;
+
+  &.in-view {
+    animation: fadeSoft 1s ease both;
+    opacity: 1;
+    transform: translateY(0);
+    p { white-space: normal; }
+    p:nth-child(1) { animation-delay: 0s; }
+    p:nth-child(2) { animation-delay: 0.18s; }
+    p:nth-child(3) { animation-delay: 0.36s; }
+    p:nth-child(4) { animation-delay: 0.54s; }
+    p:nth-child(5) { animation-delay: 0.72s; }
+    p:nth-child(6) { animation-delay: 0.90s; }
+    p:nth-child(7) { animation-delay: 1.08s; }
+  }
+  .title-line {
+    font-size: 36rpx;
+    letter-spacing: 1.4rpx;
+    color: #2f120e;
+    font-weight: 680;
+  }
+  p { margin: 8rpx 0 0; }
+  p:last-child {
+    text-align: right;
+    font-weight: 720;
+  }
+}
+
+.opening-layout-4 .opening-top-text::before,
+.opening-layout-4 .opening-top-text-4::before { display: none; }
+
+/* 第六屏：沿用第二屏风格，上文下图排版 */
+.section-opening-5 {
+  @extend .section-opening;
+  padding: 8rpx 20rpx 22rpx;
+}
+
+.opening-layout-5-copy {
+  @extend .opening-layout;
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+.opening-photo-5-copy {
+  @extend .opening-photo;
+  height: 30vh;
+  max-height: 300rpx;
+  border-radius: 16rpx;
+  box-shadow: 0 10rpx 22rpx rgba(0, 0, 0, 0.16);
+  margin-bottom: 0;
+}
+
+
+
+.opening-top-text-5-copy {
+  @extend .opening-top-text;
+  max-width: 100%;
+  margin: 4rpx 0 4rpx;
+  padding: 10rpx 6rpx 4rpx;
+  text-align: center;
+  line-height: 1.6;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.opening-top-text-5-copy p {
+  font-weight: 520;
+  font-size: 32rpx;
+}
+
+.rsvp-inline {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 22rpx 20rpx 18rpx;
+  box-shadow: 0 14rpx 32rpx rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+
+.rsvp-inline .section-header {
+  margin-bottom: 12rpx;
+}
+
+.rsvp-inline .rsvp-form {
+  margin-bottom: 6rpx;
+}
+
+.rsvp-inline .stats-card {
+  margin-top: 4rpx;
+}
+
+.form-item.form-inline {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.form-item.form-inline .form-label {
+  margin-bottom: 0;
+  min-width: 160rpx;
+}
+
+.form-item.form-inline .form-input,
+.form-item.form-inline .form-textarea-single,
+.form-item.form-inline .form-textarea-double {
+  flex: 1;
+  width: auto;
+}
+
+.radio-group.inline {
+
+
+  display: flex;
+  gap: 28rpx;
+  align-items: center;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1581,6 +1990,20 @@ onShareTimeline(() => {
     color: #333;
     line-height: 1.6;
   }
+  .form-textarea-single {
+    min-height: 72rpx;
+    height: 72rpx;
+    padding: 14rpx 20rpx;
+    line-height: 1.5;
+  }
+  .form-textarea-double {
+    min-height: 120rpx;
+    height: auto;
+    padding: 18rpx 20rpx;
+    line-height: 1.6;
+  }
+
+
   .radio-group {
     display: flex;
     gap: 40rpx;
@@ -1608,27 +2031,47 @@ onShareTimeline(() => {
   box-shadow: 0 10rpx 30rpx rgba(255, 76, 145, 0.4);
 }
 
-.stats-card {
-  display: flex;
-  justify-content: space-around;
+.share-btn-inline {
+  margin-top: 26rpx;
+  width: 100%;
+  height: 88rpx;
   background: #fff;
-  border-radius: 20rpx;
-  padding: 40rpx;
-  box-shadow: 0 10rpx 30rpx rgba(255, 76, 145, 0.1);
-  .stat-item {
-    text-align: center;
-    .stat-number {
-      font-size: 48rpx;
-      color: #ff4c91;
-      font-weight: bold;
-      margin-bottom: 10rpx;
-    }
-    .stat-label {
-      font-size: 24rpx;
-      color: #999;
-    }
-  }
+  color: #ff4c91;
+  border: 2rpx solid #ff4c91;
+  border-radius: 44rpx;
+  font-size: 30rpx;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  box-shadow: 0 8rpx 18rpx rgba(255, 76, 145, 0.16);
 }
+
+
+.stats-card {
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24rpx;
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 16rpx 20rpx;
+  box-shadow: 0 8rpx 22rpx rgba(255, 76, 145, 0.12);
+}
+
+.stats-inline .stat-inline-text {
+  font-size: 28rpx;
+  color: #ff4c91;
+  font-weight: 700;
+}
+
+.stats-inline .stat-inline-text + .stat-inline-text {
+  margin-left: 10rpx;
+}
+
+
 
 /* 尾页 */
 .section-footer {
