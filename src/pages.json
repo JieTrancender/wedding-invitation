@@ -1,13 +1,19 @@
 {
   "pages": [
     {
-      "path": "pages/wedding/index",
+      "path": "pages/index/index",
       "style": {
-        "navigationBarTitleText": "婚礼邀请"
+        "navigationBarTitleText": "莫杰&罗静 婚礼邀请",
+        "enableShareAppMessage": true,
+        "enableShareTimeline": true
       }
     }
+
+
   ],
-  "requiredBackgroundModes": ["audio"],
+  "requiredBackgroundModes": [
+    "audio"
+  ],
   "cloud": true,
   "globalStyle": {
     "backgroundTextStyle": "light",
