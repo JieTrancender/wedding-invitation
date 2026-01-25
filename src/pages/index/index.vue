@@ -147,8 +147,15 @@
 
 
             <div class="form-item">
-              <textarea v-model="form.message" class="form-textarea form-textarea-double" placeholder="请留下您的祝福..." maxlength="200" />
+              <textarea
+                v-model="form.message"
+                class="form-textarea form-textarea-double"
+                placeholder="请留下您的祝福..."
+                maxlength="200"
+                rows="2"
+              />
             </div>
+
 
 
 
@@ -174,122 +181,12 @@
 
 
 
-    <div class="section section-story-intro snap-section">
-
-
-
-
-
-
-
-
-      <div class="opening opening-stack">
-        <div class="opening-timeline">
-          <div class="opening-row">
-            <span class="opening-time">2013.01.01</span>
-            <span class="opening-desc">高中走廊</span>
-          </div>
-          <div class="opening-row">
-            <span class="opening-time">2017.02.02</span>
-            <span class="opening-desc">大学心动</span>
-          </div>
-          <div class="opening-row">
-            <span class="opening-time">2025.12.31</span>
-            <span class="opening-desc">法律意义上的我们</span>
-          </div>
-          <div class="opening-row">
-            <span class="opening-time">2026.02.24</span>
-            <span class="opening-desc">请你来见证爱的庆典</span>
-          </div>
-        </div>
-        <div class="banquet-card">
-          <div class="banquet-title">喜宴时间</div>
-          <div class="banquet-time">2026年02月24日 - 2026年02月25日</div>
-          <div class="banquet-title address">喜宴地址</div>
-          <div class="banquet-time">仪陇县观紫镇大兴村四社</div>
-        </div>
-        <div class="story-intro-card">
-          <p>从课桌到婚书，我们走了九年。</p>
-          <p>那年没敢递出的情书，</p>
-          <p>今天请你来读结局。</p>
-        </div>
-      </div>
-    </div>
-
-
-    <div v-if="storyList && storyList.length > 0" class="section section-story">
-
-      <div class="story-timeline">
-        <div v-for="(item, index) in storyList" :key="index" class="story-item" :class="index % 2 === 0 ? 'left' : 'right'">
-          <div class="story-card" @touchstart="(e) => onStoryTouchStart(index, e)" @touchend="(e) => onStoryTouchEnd(index, e)">
-            <image :src="item.url" class="story-photo" mode="aspectFill" @load="markStoryLoaded(index)" />
-            <p
-              class="story-desc-overlay"
-              :class="{ 'story-desc-show': storyLoaded[index] && !storyHidden[index] }"
-            >
-              {{ item.desc }}
-              <span class="story-arrow" v-if="storyLoaded[index] && !storyHidden[index]">→ 向右隐藏</span>
-            </p>
-
-
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-
-
-    <!-- 婚礼信息 -->
-    <div class="section section-info">
-      <div class="section-header">
-        <h2 class="section-title">婚礼信息</h2>
-        <div class="section-line"></div>
-      </div>
-      <div class="info-card">
-        <div class="info-item">
-          <div class="info-icon">📅</div>
-          <div class="info-text">
-            <div class="info-label">日期</div>
-            <div class="info-value">{{ formatDate(info.date) || '2026年1月25日' }}</div>
-          </div>
-        </div>
-        <div class="info-item">
-          <div class="info-icon">🕐</div>
-          <div class="info-text">
-            <div class="info-label">时间</div>
-            <div class="info-value">{{ formatTime(info.time) || '12:00' }}</div>
-          </div>
-        </div>
-        <div class="info-item">
-          <div class="info-icon">📍</div>
-          <div class="info-text">
-            <div class="info-label">地点</div>
-            <div class="info-value">{{ formatHotel(info.hotel) || '某某酒店' }}</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-
-    <!-- 尾页 & 分享引导 -->
-    <div class="section section-footer">
-      <div class="footer-content">
-        <h3 class="footer-title">期待与您共度这重要时刻</h3>
-        <p class="footer-subtitle">感谢您的祝福</p>
-        <button class="share-btn" open-type="share">
-          <span class="btn-icon">📤</span>
-          <span>转发给其他亲友</span>
-        </button>
-      </div>
-    </div>
-
 
   </div>
 </template>
 
 <script setup lang="ts">
+
 
 import { ref, onMounted, onUnmounted, getCurrentInstance, nextTick } from 'vue'
 import { onShow, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app'
@@ -1566,58 +1463,7 @@ onShareTimeline(() => {
 
 
 
-.banquet-card {
 
-
-  width: 100%;
-  max-width: 820rpx;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 245, 250, 0.95));
-  border-radius: 22rpx;
-  padding: 24rpx 28rpx;
-  box-shadow: 0 14rpx 32rpx rgba(255, 76, 145, 0.14);
-  display: grid;
-  gap: 10rpx;
-  text-align: center;
-  animation: fadeSoft 0.9s ease 0.3s both;
-}
-
-.section-story-intro {
-  padding: 80rpx 46rpx 40rpx;
-}
-.story-intro-card {
-  max-width: 820rpx;
-  width: 100%;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(255, 245, 250, 0.95));
-  border-radius: 22rpx;
-  padding: 22rpx 30rpx;
-  box-shadow: 0 12rpx 28rpx rgba(255, 76, 145, 0.12);
-  text-align: center;
-  font-size: 34rpx;
-  line-height: 1.9;
-  color: #111;
-  letter-spacing: 0.5rpx;
-  animation: fadeSoft 0.9s ease 0.15s both;
-  p {
-    margin: 12rpx 0;
-  }
-}
-
-
-
-.banquet-title {
-  font-size: 30rpx;
-  font-weight: 800;
-  color: #ff4c91;
-  letter-spacing: 1rpx;
-}
-.banquet-title.address {
-  margin-top: 8rpx;
-}
-.banquet-time {
-  font-size: 32rpx;
-  color: #262626;
-  letter-spacing: 0.6rpx;
-}
 
 
 
@@ -1998,10 +1844,16 @@ onShareTimeline(() => {
   }
   .form-textarea-double {
     min-height: 120rpx;
-    height: auto;
+    max-height: 160rpx;
+    height: 120rpx;
     padding: 18rpx 20rpx;
     line-height: 1.6;
+    resize: none;
+    box-sizing: border-box;
+    overflow: auto;
+    flex-shrink: 0;
   }
+
 
 
   .radio-group {
