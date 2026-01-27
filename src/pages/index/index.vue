@@ -52,7 +52,16 @@
             <span class="label">母亲</span> <strong class="highlight">李桂华</strong>
           </div>
           <div class="overlay-info"><span class="label">喜宴时间</span> <strong class="highlight">2026年02月24日 - 2026年02月25日</strong></div>
-          <div class="overlay-info"><span class="label">喜宴地址</span> <strong>四川省南充市仪陇县观紫镇大兴村四社</strong></div>
+          <div class="overlay-info">
+            <span class="label">喜宴地址</span>
+            <strong>{{ locationInfo.address || '四川省南充市仪陇县观紫镇大兴村四社' }}</strong>
+          </div>
+          <div class="nav-button-container">
+            <button class="nav-button" @tap="openMapNavigation">
+              <span class="nav-button-icon">📍</span>
+              <span class="nav-button-text">导航到现场</span>
+            </button>
+          </div>
         </div>
 
 
@@ -210,6 +219,11 @@ const info = ref<any>({})
 const coverImage = ref('')
 const shareImage = ref('')
 const musicUrl = ref('')
+const locationInfo = ref({
+  lon: 0,
+  lat: 0,
+  address: ''
+})
 const storyList = ref<any[]>([])
 const storyLoaded = ref<boolean[]>([])
 const storyHidden = ref<boolean[]>([])
@@ -430,7 +444,7 @@ onUnmounted(() => {
 const setupOpeningObserver = () => {
   if (openingObserver) return
   nextTick(() => {
-    openingObserver = uni.createIntersectionObserver(instance?.proxy, { thresholds: [0, 0.1, 0.2, 0.5] })
+    openingObserver = uni.createIntersectionObserver(instance?.proxy, { thresholds: [0, 0.1, 0.2, 0.5], observeAll: true })
     openingObserver
       .relativeToViewport({ top: 0, bottom: 0 })
       .observe('.section-opening .opening-layout', (res) => {
@@ -444,7 +458,7 @@ const setupOpeningObserver = () => {
 const setupOpeningObserver2 = () => {
   if (openingObserver2) return
   nextTick(() => {
-    openingObserver2 = uni.createIntersectionObserver(instance?.proxy, { thresholds: [0, 0.1, 0.2, 0.5] })
+    openingObserver2 = uni.createIntersectionObserver(instance?.proxy, { thresholds: [0, 0.1, 0.2, 0.5], observeAll: true })
     openingObserver2
       .relativeToViewport({ top: 0, bottom: 0 })
       .observe('.section-opening-2 .opening-layout', (res) => {
@@ -458,7 +472,7 @@ const setupOpeningObserver2 = () => {
 const setupOpeningObserver3 = () => {
   if (openingObserver3) return
   nextTick(() => {
-    openingObserver3 = uni.createIntersectionObserver(instance?.proxy, { thresholds: [0, 0.1, 0.2, 0.5] })
+    openingObserver3 = uni.createIntersectionObserver(instance?.proxy, { thresholds: [0, 0.1, 0.2, 0.5], observeAll: true })
     openingObserver3
       .relativeToViewport({ top: 0, bottom: 0 })
       .observe('.section-opening-3 .opening-layout', (res) => {
@@ -472,7 +486,7 @@ const setupOpeningObserver3 = () => {
 const setupOpeningObserver4 = () => {
   if (openingObserver4) return
   nextTick(() => {
-    openingObserver4 = uni.createIntersectionObserver(instance?.proxy, { thresholds: [0, 0.1, 0.2, 0.5] })
+    openingObserver4 = uni.createIntersectionObserver(instance?.proxy, { thresholds: [0, 0.1, 0.2, 0.5], observeAll: true })
     openingObserver4
       .relativeToViewport({ top: 0, bottom: 0 })
       .observe('.section-opening-4 .opening-layout', (res) => {
@@ -486,7 +500,7 @@ const setupOpeningObserver4 = () => {
 const setupOpeningObserver5 = () => {
   if (openingObserver5) return
   nextTick(() => {
-    openingObserver5 = uni.createIntersectionObserver(instance?.proxy, { thresholds: [0, 0.1, 0.2, 0.5] })
+    openingObserver5 = uni.createIntersectionObserver(instance?.proxy, { thresholds: [0, 0.1, 0.2, 0.5], observeAll: true })
     openingObserver5
       .relativeToViewport({ top: 0, bottom: 0 })
       .observe('.section-opening-5 .opening-layout', (res) => {
@@ -507,7 +521,7 @@ const setupOpeningObserver5 = () => {
 const loadData = () => {
 
 
-  // 获取婚礼信息
+      // 获取婚礼信息
   if (import.meta.env.VITE_VUE_WECHAT_TCB === 'true') {
     const db = wx.cloud.database()
     const common = db.collection('common')
@@ -520,6 +534,24 @@ const loadData = () => {
     getCommonConfig().then(res => {
       info.value = typeof res.data.info === 'string' ? JSON.parse(res.data.info) : res.data.info
       musicUrl.value = res.data.videoUrl
+
+      // 获取位置信息
+      if (res.data.locationLon && res.data.locationLat) {
+        locationInfo.value.lon = res.data.locationLon
+        locationInfo.value.lat = res.data.locationLat
+      }
+
+      // 从 hotel 字段中提取 address（用于地址显示和地图导航）
+      if (res.data.hotel) {
+        try {
+          const hotelObj = typeof res.data.hotel === 'string' ? JSON.parse(res.data.hotel) : res.data.hotel
+            locationInfo.value.address = hotelObj.address || res.data.hotel
+            console.log('[酒店信息] 解析 hotel 成功:', hotelObj)
+          } catch {
+            locationInfo.value.address = res.data.hotel
+          }
+      }
+
       initAudio()
     })
   }
@@ -628,6 +660,44 @@ const toggleMusic = () => {
     innerAudioContext.pause()
     showToast('背景音乐已暂停')
   }
+}
+
+// 打开地图导航
+const openMapNavigation = () => {
+  console.log('[地图导航] 打开地图导航', locationInfo.value)
+
+  const { lon, lat, address } = locationInfo.value
+
+  if (!lon || !lat) {
+    showToast('暂无位置信息，无法导航')
+    return
+  }
+
+  // 使用从 hotel 字段提取的 address；如果为空则使用默认地址
+  const mapAddress = address || '四川省南充市仪陇县观紫镇大兴村四社'
+
+  // 构建地图名称：新郎&新娘 婚礼喜宴地点
+  const mapName = info.value?.name ? `${info.value.name} 婚礼喜宴地点` : '婚礼喜宴地点'
+
+  console.log('[地图导航] 地图名称:', mapName)
+  console.log('[地图导航] 地图地址:', mapAddress)
+  console.log('[地图导航] 使用 hotel address:', !!address)
+
+  // 微信小程序使用 wx.openLocation
+  uni.openLocation({
+    latitude: lat,
+    longitude: lon,
+    name: mapName,
+    address: mapAddress,
+    scale: 15,
+    success: () => {
+      console.log('[地图导航] 成功打开地图')
+    },
+    fail: (err: any) => {
+      console.error('[地图导航] 打开地图失败:', err)
+      showToast('打开地图失败，请重试')
+    }
+  })
 }
 
 const onAttendChange = (e: any) => {
@@ -1417,6 +1487,51 @@ onShareTimeline(() => {
     opacity: 0.8;
     padding: 0 4rpx;
   }
+}
+
+/* 导航按钮容器 */
+.nav-button-container {
+  margin-top: 24rpx;
+  display: flex;
+  justify-content: center;
+  padding: 0 20rpx;
+  opacity: 0;
+  transform: translateY(14rpx);
+  animation: fadeSoft 1s ease 0.5s both;
+}
+
+/* 导航按钮 */
+.nav-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  width: 100%;
+  max-width: 480rpx;
+  height: 88rpx;
+  background: linear-gradient(135deg, #ff4c91, #ff6b9d);
+  color: #fff;
+  border: none;
+  border-radius: 44rpx;
+  font-size: 32rpx;
+  font-weight: 700;
+  letter-spacing: 1rpx;
+  box-shadow: 0 8rpx 24rpx rgba(255, 76, 145, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.nav-button:active {
+  transform: scale(0.97);
+  box-shadow: 0 4rpx 12rpx rgba(255, 76, 145, 0.25);
+}
+
+.nav-button-icon {
+  font-size: 36rpx;
+}
+
+.nav-button-text {
+  font-size: 32rpx;
+  font-weight: 700;
 }
 
 
