@@ -208,6 +208,7 @@ const instance = getCurrentInstance()
 
 const info = ref<any>({})
 const coverImage = ref('')
+const shareImage = ref('')
 const musicUrl = ref('')
 const storyList = ref<any[]>([])
 const storyLoaded = ref<boolean[]>([])
@@ -221,8 +222,29 @@ const openingImage3 = 'https://klife.keyboard-man.com/wedding_invitation/%E5%BE%
 const openingImage4 = 'https://klife.keyboard-man.com/wedding_invitation/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20260123172430_167_980.jpg?imageslim/zlevel/3'
 const openingImage5 = 'https://klife.keyboard-man.com/wedding_invitation/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20260124150340_233_980.jpg?imageslim/zlevel/3'
 
+// 预下载图片，减少首屏等待（微信小程序使用原生能力，其它端退回 uni.getImageInfo）
+const prefetchImages = (urls: string[]) => {
+  const valid = (urls || []).filter(Boolean)
+  if (!valid.length) return
+  valid.forEach(url => {
+    // #ifdef MP-WEIXIN
+    wx.getImageInfo({ src: url, success: () => {}, fail: () => {} })
+    // #endif
+
+    // #ifndef MP-WEIXIN
+    uni.getImageInfo({ src: url, success: () => {}, fail: () => {} })
+    // #endif
+  })
+}
+
+const prefetchStaticImages = () => {
+  prefetchImages([openingImage, openingImage2, openingImage3, openingImage4, openingImage5])
+}
+
+
 
 const openingInView = ref(false)
+
 
 const openingInView2 = ref(false)
 const openingInView3 = ref(false)
@@ -331,9 +353,11 @@ onMounted(() => {
   setupOpeningObserver3()
   setupOpeningObserver4()
   setupOpeningObserver5()
+  prefetchStaticImages()
   loadData()
   initAudio()
 })
+
 
 
 
@@ -503,10 +527,32 @@ const loadData = () => {
 
   // 获取封面图片
   getResouces('wedding-cover').then(res => {
+    console.log('[封面图片] 请求 wedding-cover 类型资源，返回结果:', res)
     if (res.data && res.data.length > 0) {
       coverImage.value = res.data[0].url
+      console.log('[封面图片] 成功获取封面图片 URL:', coverImage.value)
+      prefetchImages([coverImage.value])
+    } else {
+      console.warn('[封面图片] 未找到 wedding-cover 类型的资源')
     }
+  }).catch(err => {
+    console.error('[封面图片] 获取 wedding-cover 类型资源失败:', err)
   })
+
+  // 获取分享图片
+  getResouces('invitation').then(res => {
+    console.log('[分享图片] 请求 invitation 类型资源，返回结果:', res)
+    if (res.data && res.data.length > 0) {
+      shareImage.value = res.data[0].url
+      console.log('[分享图片] 成功获取分享图片 URL:', shareImage.value)
+      prefetchImages([shareImage.value])
+    } else {
+      console.warn('[分享图片] 未找到 invitation 类型的资源，将使用封面图片作为备用')
+    }
+  }).catch(err => {
+    console.error('[分享图片] 获取 invitation 类型资源失败:', err)
+  })
+
 
   // 获取爱情故事
   getResouces('love-story').then(res => {
@@ -742,21 +788,32 @@ const formatHotel = (hotel: any) => {
 // 分享到聊天
 onShareAppMessage(() => {
   const title = info.value?.name ? `${info.value.name}的婚礼邀请` : '婚礼邀请函'
+  const imageUrl = shareImage.value || coverImage.value || ''
+  console.log('[分享到聊天] 标题:', title)
+  console.log('[分享到聊天] 使用图片类型:', shareImage.value ? 'invitation' : 'wedding-cover')
+  console.log('[分享到聊天] 图片URL:', imageUrl)
+  console.log('[分享到聊天] shareImage.value:', shareImage.value)
+  console.log('[分享到聊天] coverImage.value:', coverImage.value)
   return {
     title,
     path: '/pages/index/index',
-
-    imageUrl: coverImage.value || ''
+    imageUrl
   }
 })
 
 // 分享到朋友圈
 onShareTimeline(() => {
   const title = info.value?.name ? `${info.value.name}的婚礼邀请` : '婚礼邀请函'
+  const imageUrl = shareImage.value || coverImage.value || ''
+  console.log('[分享到朋友圈] 标题:', title)
+  console.log('[分享到朋友圈] 使用图片类型:', shareImage.value ? 'invitation' : 'wedding-cover')
+  console.log('[分享到朋友圈] 图片URL:', imageUrl)
+  console.log('[分享到朋友圈] shareImage.value:', shareImage.value)
+  console.log('[分享到朋友圈] coverImage.value:', coverImage.value)
   return {
     title,
     query: '',
-    imageUrl: coverImage.value || ''
+    imageUrl
   }
 })
 </script>

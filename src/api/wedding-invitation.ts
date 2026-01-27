@@ -25,7 +25,7 @@ export function getCommonConfig() {
  * 获取资源配置
  * @returns
  */
-export function getResouces(type: 'music' | 'photo-banner' | 'index-banner' | 'wedding-cover' | 'love-story') {
+export function getResouces(type: 'music' | 'photo-banner' | 'index-banner' | 'wedding-cover' | 'love-story' | 'invitation') {
   return http.request({
     url: '/api/wedding-invitation/getResouces',
     method: 'GET',

@@ -16,3 +16,6 @@ dist-ssr
 *.local
 yarn-error.log
 .eslintcache
+
+tools/upload/upload.js
+private.wxa020bb825fc38cc6.key
