@@ -237,10 +237,11 @@ export function uploadAvatar(filePath, formData) {
     name: 'file',
     formData,
     params: {
-      userId: import.meta.env.VUE_APP_USERID as string
+      userId: import.meta.env.VITE_VUE_APP_USERID as string
     }
   })
 }
+
 
 /**
  * 提交RSVP回执

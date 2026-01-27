@@ -138,9 +138,9 @@
 
         <div class="rsvp-inline">
           <div class="opening-top-text opening-top-text-5-copy" :class="{ 'in-view': openingInView5 }">
-            <p>一日叙旧，亲朋共话往昔</p>
-            <p>一日盟誓，山海同证此心</p>
-            <p>恭候莅临，共度春初最温柔的两天</p>
+            <p>诚邀您参加我们的婚礼</p>
+            <p>期待您的到来，与我们共同庆祝</p>
+            <p>您的祝福是我们最珍贵的礼物</p>
           </div>
 
           <div class="rsvp-form">
@@ -150,7 +150,7 @@
               <input v-model="form.name" class="form-input" placeholder="请输入您的姓名" />
             </div>
             <div class="form-item form-inline">
-              <label class="form-label">是否出席 <span class="required">*</span></label>
+              <label class="form-label">出席 <span class="required">*</span></label>
               <radio-group class="radio-group inline" @change="onAttendChange">
                 <label class="radio-item">
                   <radio value="1" :checked="form.attend" color="#ff4c91" />
@@ -1332,22 +1332,22 @@ onShareTimeline(() => {
   }
 }
 
-/* 第五屏：第二屏风格，图片上文字下 */
+/* 第五屏：统一卡片容器，图片上文字下，居中对齐 */
 .opening-layout-4 {
-  @extend .opening-layout-2;
-  width: 100%;
-  max-width: none;
-  gap: 0;
+  width: 90vw;
+  max-width: 90vw;
+  margin: 40rpx auto;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 28rpx;
+  box-shadow: 0 16rpx 40rpx rgba(106, 54, 35, 0.15);
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
+  align-items: center;
   justify-content: flex-start;
-  text-align: left;
-  background: transparent;
-  border-radius: 0;
+  text-align: center;
   padding: 0;
-  margin: 0;
-  box-shadow: none;
+  backdrop-filter: blur(10rpx);
 }
 
 
@@ -1355,8 +1355,8 @@ onShareTimeline(() => {
 
 .opening-photo-4 {
   width: 100%;
-  max-width: none;
-  height: 56vh;
+  max-width: 100%;
+  height: 48vh;
   object-fit: cover;
   border-radius: 0;
   border: none;
@@ -1366,13 +1366,13 @@ onShareTimeline(() => {
   display: block;
 }
 
-/* 第五屏图片强制去圆角/阴影/空隙 */
+/* 第五屏统一卡片样式 */
 .section-opening-4 .opening-photo,
 .section-opening-4 .opening-photo-2,
 .section-opening-4 .opening-photo-4 {
   width: 100% !important;
-  max-width: none !important;
-  height: 56vh;
+  max-width: 100% !important;
+  height: 48vh;
   object-fit: cover;
   border-radius: 0 !important;
   border: 0 !important;
@@ -1390,16 +1390,17 @@ onShareTimeline(() => {
 
 .opening-layout-4 .opening-top-text,
 .opening-layout-4 .opening-top-text-4 {
-  padding: 0 24rpx;
-  margin: 14rpx auto 0;
-  max-width: 92vw;
-  text-align: left;
-  border-left: none;
-  padding-left: 0;
+  padding: 40rpx 48rpx;
+  margin: 0;
+  max-width: 100%;
+  text-align: center;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
   opacity: 0;
   transform: translateY(14rpx);
-  line-height: 1.74;
-  letter-spacing: 0.8rpx;
+  line-height: 1.88;
+  letter-spacing: 0.9rpx;
 
   &.in-view {
     animation: fadeSoft 1s ease both;
@@ -1415,20 +1416,21 @@ onShareTimeline(() => {
     p:nth-child(7) { animation-delay: 1.08s; }
   }
   .title-line {
-    font-size: 36rpx;
-    letter-spacing: 1.4rpx;
+    font-size: 38rpx;
+    letter-spacing: 1.6rpx;
     color: #2f120e;
-    font-weight: 680;
+    font-weight: 700;
+    margin-bottom: 16rpx;
   }
-  p { margin: 8rpx 0 0; }
+  p { margin: 12rpx 0 0; }
   p:last-child {
-    text-align: right;
-    font-weight: 720;
+    text-align: center;
+    font-weight: 650;
+    margin-top: 20rpx;
+    color: #b43b3b;
   }
 }
 
-.opening-layout-4 .opening-top-text::before,
-.opening-layout-4 .opening-top-text-4::before { display: none; }
 
 /* 第六屏：沿用第二屏风格，上文下图排版 */
 .section-opening-5 {
@@ -1437,32 +1439,44 @@ onShareTimeline(() => {
 }
 
 .opening-layout-5-copy {
-  @extend .opening-layout;
+  width: 90vw;
+  max-width: 90vw;
+  margin: 40rpx auto;
+  background: rgba(255, 255, 255, 0.88);
+  border-radius: 28rpx;
+  box-shadow: 0 16rpx 40rpx rgba(106, 54, 35, 0.15);
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 6rpx;
-  align-items: stretch;
+  align-items: center;
   justify-content: flex-start;
+  text-align: center;
+  padding: 0;
+  backdrop-filter: blur(10rpx);
 }
 
 .opening-photo-5-copy {
-  @extend .opening-photo;
+  width: 100%;
+  max-width: 100%;
   height: 30vh;
   max-height: 300rpx;
-  border-radius: 16rpx;
-  box-shadow: 0 10rpx 22rpx rgba(0, 0, 0, 0.16);
-  margin-bottom: 0;
+  object-fit: cover;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+  margin: 0;
+  padding: 0;
+  display: block;
 }
 
 
 
 .opening-top-text-5-copy {
-  @extend .opening-top-text;
   max-width: 100%;
-  margin: 4rpx 0 4rpx;
-  padding: 10rpx 6rpx 4rpx;
+  margin: 0;
+  padding: 24rpx 40rpx 20rpx;
   text-align: center;
-  line-height: 1.6;
+  line-height: 1.68;
   background: transparent;
   border-radius: 0;
   box-shadow: none;
@@ -1470,17 +1484,19 @@ onShareTimeline(() => {
 
 .opening-top-text-5-copy p {
   font-weight: 520;
-  font-size: 32rpx;
+  font-size: 30rpx;
+  margin: 8rpx 0;
 }
 
 .rsvp-inline {
-  background: #fff;
-  border-radius: 20rpx;
-  padding: 22rpx 20rpx 18rpx;
-  box-shadow: 0 14rpx 32rpx rgba(0, 0, 0, 0.12);
+  background: transparent;
+  border-radius: 0;
+  padding: 0 40rpx 32rpx;
+  box-shadow: none;
   display: flex;
   flex-direction: column;
   gap: 10rpx;
+  width: 100%;
 }
 
 
