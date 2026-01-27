@@ -56,10 +56,14 @@
             <span class="label">喜宴地址</span>
             <strong>{{ locationInfo.address || '四川省南充市仪陇县观紫镇大兴村四社' }}</strong>
           </div>
-          <div class="nav-button-container">
-            <button class="nav-button" @tap="openMapNavigation">
-              <span class="nav-button-icon">📍</span>
-              <span class="nav-button-text">导航到现场</span>
+          <div class="action-buttons-container">
+            <button class="action-button phone-button" @tap="showPhoneActions">
+              <span class="action-icon">📱</span>
+              <span class="action-text">联系电话</span>
+            </button>
+            <button class="action-button nav-button" @tap="openMapNavigation">
+              <span class="action-icon">📍</span>
+              <span class="action-text">导航到现场</span>
             </button>
           </div>
         </div>
@@ -198,6 +202,53 @@
 
 
   </div>
+
+  <!-- 电话选择弹窗 -->
+  <div class="phone-action-sheet" v-if="showPhoneModal" @tap="showPhoneModal = false">
+    <div class="phone-action-content" @tap.stop>
+      <div class="phone-action-header">选择拨打</div>
+
+      <!-- 新郎家人 -->
+      <div v-if="contactInfo.heNumber || contactInfo.heFatherNumber || contactInfo.heMotherNumber || contactInfo.heSisterNumber" class="phone-action-group">
+        <div class="phone-action-group-title">新郎家人</div>
+        <div class="phone-action-item" v-if="contactInfo.heNumber" @tap="callPhone(contactInfo.heNumber)">
+          <span class="phone-action-label">新郎</span>
+          <span class="phone-action-number">{{ contactInfo.heNumber }}</span>
+        </div>
+        <div class="phone-action-item" v-if="contactInfo.heFatherNumber" @tap="callPhone(contactInfo.heFatherNumber)">
+          <span class="phone-action-label">父亲</span>
+          <span class="phone-action-number">{{ contactInfo.heFatherNumber }}</span>
+        </div>
+        <div class="phone-action-item" v-if="contactInfo.heMotherNumber" @tap="callPhone(contactInfo.heMotherNumber)">
+          <span class="phone-action-label">母亲</span>
+          <span class="phone-action-number">{{ contactInfo.heMotherNumber }}</span>
+        </div>
+        <div class="phone-action-item" v-if="contactInfo.heSisterNumber" @tap="callPhone(contactInfo.heSisterNumber)">
+          <span class="phone-action-label">姐姐</span>
+          <span class="phone-action-number">{{ contactInfo.heSisterNumber }}</span>
+        </div>
+      </div>
+
+      <!-- 新娘家人 -->
+      <div v-if="contactInfo.sheNumber || contactInfo.sheFatherNumber || contactInfo.sheMotherNumber" class="phone-action-group">
+        <div class="phone-action-group-title">新娘家人</div>
+        <div class="phone-action-item" v-if="contactInfo.sheNumber" @tap="callPhone(contactInfo.sheNumber)">
+          <span class="phone-action-label">新娘</span>
+          <span class="phone-action-number">{{ contactInfo.sheNumber }}</span>
+        </div>
+        <div class="phone-action-item" v-if="contactInfo.sheFatherNumber" @tap="callPhone(contactInfo.sheFatherNumber)">
+          <span class="phone-action-label">父亲</span>
+          <span class="phone-action-number">{{ contactInfo.sheFatherNumber }}</span>
+        </div>
+        <div class="phone-action-item" v-if="contactInfo.sheMotherNumber" @tap="callPhone(contactInfo.sheMotherNumber)">
+          <span class="phone-action-label">母亲</span>
+          <span class="phone-action-number">{{ contactInfo.sheMotherNumber }}</span>
+        </div>
+      </div>
+
+      <div class="phone-action-cancel" @tap="showPhoneModal = false">取消</div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -219,6 +270,15 @@ const info = ref<any>({})
 const coverImage = ref('')
 const shareImage = ref('')
 const musicUrl = ref('')
+const contactInfo = ref({
+  heNumber: '',
+  sheNumber: '',
+  heFatherNumber: '',
+  heMotherNumber: '',
+  heSisterNumber: '',
+  sheFatherNumber: '',
+  sheMotherNumber: ''
+})
 const locationInfo = ref({
   lon: 0,
   lat: 0,
@@ -230,6 +290,7 @@ const storyHidden = ref<boolean[]>([])
 const touchStartX = ref<number[]>([])
 const isPlaying = ref(false)
 const snapEnabled = ref(true)
+const showPhoneModal = ref(false)
 const openingImage = 'https://klife.keyboard-man.com/wedding_invitation/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20260124150433_234_980.jpg?imageslim/zlevel/3'
 const openingImage2 = 'https://klife.keyboard-man.com/wedding_invitation/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20260123172039_160_980.jpg?imageslim/zlevel/3'
 const openingImage3 = 'https://klife.keyboard-man.com/wedding_invitation/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20260123172427_164_980.jpg?imageslim/zlevel/3'
@@ -535,6 +596,36 @@ const loadData = () => {
       info.value = typeof res.data.info === 'string' ? JSON.parse(res.data.info) : res.data.info
       musicUrl.value = res.data.videoUrl
 
+      // 获取联系电话
+      contactInfo.value.heNumber = res.data.heNumber || ''
+      contactInfo.value.sheNumber = res.data.sheNumber || ''
+      console.log('[联系电话] 新郎电话:', contactInfo.value.heNumber)
+      console.log('[联系电话] 新娘电话:', contactInfo.value.sheNumber)
+
+      // 从 detail 字段中获取家人的电话信息
+      if (res.data.detail) {
+        try {
+          const detailObj = typeof res.data.detail === 'string' ? JSON.parse(res.data.detail) : res.data.detail
+
+          // 获取新郎家人的电话
+          contactInfo.value.heFatherNumber = detailObj.heFatherNumber || ''
+          contactInfo.value.heMotherNumber = detailObj.heMotherNumber || ''
+          contactInfo.value.heSisterNumber = detailObj.heSisterNumber || ''
+
+          // 获取新娘家人的电话
+          contactInfo.value.sheFatherNumber = detailObj.sheFatherNumber || ''
+          contactInfo.value.sheMotherNumber = detailObj.sheMotherNumber || ''
+
+          console.log('[联系电话] 新郎父亲电话:', contactInfo.value.heFatherNumber)
+          console.log('[联系电话] 新郎母亲电话:', contactInfo.value.heMotherNumber)
+          console.log('[联系电话] 新郎姐姐电话:', contactInfo.value.heSisterNumber)
+          console.log('[联系电话] 新娘父亲电话:', contactInfo.value.sheFatherNumber)
+          console.log('[联系电话] 新娘母亲电话:', contactInfo.value.sheMotherNumber)
+        } catch (err) {
+          console.error('[联系电话] 解析 detail 字段失败:', err)
+        }
+      }
+
       // 获取位置信息
       if (res.data.locationLon && res.data.locationLat) {
         locationInfo.value.lon = res.data.locationLon
@@ -696,6 +787,57 @@ const openMapNavigation = () => {
     fail: (err: any) => {
       console.error('[地图导航] 打开地图失败:', err)
       showToast('打开地图失败，请重试')
+    }
+  })
+}
+
+// 显示电话选择弹窗
+const showPhoneActions = () => {
+  console.log('[电话选择] 打开电话选择弹窗')
+  // 收集所有可用的电话号码
+  const { heNumber, sheNumber, heFatherNumber, heMotherNumber, heSisterNumber, sheFatherNumber, sheMotherNumber } = contactInfo.value
+
+  const phoneList = []
+  if (heNumber) phoneList.push({ label: '新郎', number: heNumber })
+  if (heFatherNumber) phoneList.push({ label: '新郎父亲', number: heFatherNumber })
+  if (heMotherNumber) phoneList.push({ label: '新郎母亲', number: heMotherNumber })
+  if (heSisterNumber) phoneList.push({ label: '新郎姐姐', number: heSisterNumber })
+  if (sheNumber) phoneList.push({ label: '新娘', number: sheNumber })
+  if (sheFatherNumber) phoneList.push({ label: '新娘父亲', number: sheFatherNumber })
+  if (sheMotherNumber) phoneList.push({ label: '新娘母亲', number: sheMotherNumber })
+
+  console.log('[电话选择] 可用电话列表:', phoneList)
+
+  // 如果只有一个电话，直接拨打
+  if (phoneList.length === 0) {
+    showToast('暂无联系电话')
+  } else if (phoneList.length === 1) {
+    callPhone(phoneList[0].number)
+  } else {
+    // 有多个电话，显示选择弹窗
+    showPhoneModal.value = true
+  }
+}
+
+// 拨打电话
+const callPhone = (phoneNumber: string) => {
+  console.log('[拨打电话] 电话号码:', phoneNumber)
+  showPhoneModal.value = false
+
+  if (!phoneNumber) {
+    showToast('电话号码为空')
+    return
+  }
+
+  // 微信小程序使用 wx.makePhoneCall
+  uni.makePhoneCall({
+    phoneNumber,
+    success: () => {
+      console.log('[拨打电话] 成功拨打电话')
+    },
+    fail: (err: any) => {
+      console.error('[拨打电话] 拨打电话失败:', err)
+      showToast('拨打电话失败，请重试')
     }
   })
 }
@@ -1489,35 +1631,50 @@ onShareTimeline(() => {
   }
 }
 
-/* 导航按钮容器 */
-.nav-button-container {
-  margin-top: 24rpx;
-  display: flex;
-  justify-content: center;
+/* 操作按钮容器 */
+.action-buttons-container {
+  margin-top: 32rpx;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20rpx;
   padding: 0 20rpx;
   opacity: 0;
   transform: translateY(14rpx);
   animation: fadeSoft 1s ease 0.5s both;
 }
 
-/* 导航按钮 */
-.nav-button {
+/* 操作按钮 */
+.action-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12rpx;
+  gap: 8rpx;
   width: 100%;
-  max-width: 480rpx;
   height: 88rpx;
-  background: linear-gradient(135deg, #ff4c91, #ff6b9d);
   color: #fff;
   border: none;
   border-radius: 44rpx;
-  font-size: 32rpx;
+  font-size: 28rpx;
   font-weight: 700;
-  letter-spacing: 1rpx;
-  box-shadow: 0 8rpx 24rpx rgba(255, 76, 145, 0.35);
+  letter-spacing: 0.5rpx;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* 电话按钮 */
+.phone-button {
+  background: linear-gradient(135deg, #ff6b9d, #ff8fb3);
+  box-shadow: 0 8rpx 24rpx rgba(255, 107, 157, 0.35);
+}
+
+.phone-button:active {
+  transform: scale(0.97);
+  box-shadow: 0 4rpx 12rpx rgba(255, 107, 157, 0.25);
+}
+
+/* 导航按钮 */
+.nav-button {
+  background: linear-gradient(135deg, #ff4c91, #ff6b9d);
+  box-shadow: 0 8rpx 24rpx rgba(255, 76, 145, 0.35);
 }
 
 .nav-button:active {
@@ -1525,13 +1682,102 @@ onShareTimeline(() => {
   box-shadow: 0 4rpx 12rpx rgba(255, 76, 145, 0.25);
 }
 
-.nav-button-icon {
-  font-size: 36rpx;
+/* 按钮图标 */
+.action-icon {
+  font-size: 32rpx;
 }
 
-.nav-button-text {
+/* 按钮文字 */
+.action-text {
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+/* 电话选择弹窗 */
+.phone-action-sheet {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.phone-action-content {
+  width: 100%;
+  background: #fff;
+  border-radius: 24rpx 24rpx 0 0;
+  overflow: hidden;
+  animation: slideUp 0.3s ease;
+}
+
+.phone-action-header {
+  padding: 32rpx;
+  text-align: center;
   font-size: 32rpx;
   font-weight: 700;
+  color: #3a1f1a;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.phone-action-group-title {
+  padding: 24rpx 32rpx 16rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #999;
+  background: #fafafa;
+}
+
+.phone-action-group:first-child .phone-action-group-title {
+  padding-top: 32rpx;
+}
+
+.phone-action-group:last-child {
+  padding-bottom: 16rpx;
+}
+
+.phone-action-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32rpx;
+  border-bottom: 1rpx solid #f5f5f5;
+  transition: background 0.2s ease;
+}
+
+.phone-action-item:active {
+  background: #f9f9f9;
+}
+
+.phone-action-label {
+  font-size: 30rpx;
+  color: #3a1f1a;
+  font-weight: 500;
+}
+
+.phone-action-number {
+  font-size: 32rpx;
+  color: #ff4c91;
+  font-weight: 700;
+}
+
+.phone-action-cancel {
+  padding: 32rpx;
+  text-align: center;
+  font-size: 30rpx;
+  color: #666;
+  font-weight: 500;
+  border-top: 1rpx solid #f5f5f5;
+  margin-top: 8rpx;
+}
+
+.phone-action-cancel:active {
+  background: #f9f9f9;
 }
 
 
@@ -1845,6 +2091,16 @@ onShareTimeline(() => {
 
   from { opacity: 0; transform: translateY(14rpx); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
 }
 
 /* 爱情故事 */
