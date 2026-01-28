@@ -272,7 +272,9 @@ const instance = getCurrentInstance()
 const info = ref<any>({})
 const coverImage = ref('')
 const shareImage = ref('')
+const defaultShareImage = '/static/images/share_default.jpg'
 const musicUrl = ref('')
+
 const contactInfo = ref({
   heNumber: '',
   sheNumber: '',
@@ -1019,9 +1021,9 @@ const formatHotel = (hotel: any) => {
 // 分享到聊天
 onShareAppMessage(() => {
   const title = info.value?.name ? `${info.value.name}的婚礼邀请` : '婚礼邀请函'
-  const imageUrl = shareImage.value || coverImage.value || ''
+  const imageUrl = shareImage.value || coverImage.value || defaultShareImage
   console.log('[分享到聊天] 标题:', title)
-  console.log('[分享到聊天] 使用图片类型:', shareImage.value ? 'invitation' : 'wedding-cover')
+  console.log('[分享到聊天] 使用图片类型:', shareImage.value ? 'invitation' : coverImage.value ? 'wedding-cover' : 'default')
   console.log('[分享到聊天] 图片URL:', imageUrl)
   console.log('[分享到聊天] shareImage.value:', shareImage.value)
   console.log('[分享到聊天] coverImage.value:', coverImage.value)
@@ -1032,12 +1034,13 @@ onShareAppMessage(() => {
   }
 })
 
+
 // 分享到朋友圈
 onShareTimeline(() => {
   const title = info.value?.name ? `${info.value.name}的婚礼邀请` : '婚礼邀请函'
-  const imageUrl = shareImage.value || coverImage.value || ''
+  const imageUrl = shareImage.value || coverImage.value || defaultShareImage
   console.log('[分享到朋友圈] 标题:', title)
-  console.log('[分享到朋友圈] 使用图片类型:', shareImage.value ? 'invitation' : 'wedding-cover')
+  console.log('[分享到朋友圈] 使用图片类型:', shareImage.value ? 'invitation' : coverImage.value ? 'wedding-cover' : 'default')
   console.log('[分享到朋友圈] 图片URL:', imageUrl)
   console.log('[分享到朋友圈] shareImage.value:', shareImage.value)
   console.log('[分享到朋友圈] coverImage.value:', coverImage.value)
@@ -1047,6 +1050,7 @@ onShareTimeline(() => {
     imageUrl
   }
 })
+
 </script>
 
 
