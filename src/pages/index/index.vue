@@ -165,7 +165,7 @@
 
 
 
-            <div class="form-item">
+            <div class="form-item" v-if="allowBlessing">
               <textarea
                 v-model="form.message"
                 class="form-textarea form-textarea-double"
@@ -174,6 +174,9 @@
                 rows="2"
               />
             </div>
+
+
+
 
 
 
@@ -291,6 +294,8 @@ const touchStartX = ref<number[]>([])
 const isPlaying = ref(false)
 const snapEnabled = ref(true)
 const showPhoneModal = ref(false)
+const allowBlessing = ref(false)
+
 const openingImage = 'https://klife.keyboard-man.com/wedding_invitation/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20260124150433_234_980.jpg?imageslim/zlevel/3'
 const openingImage2 = 'https://klife.keyboard-man.com/wedding_invitation/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20260123172039_160_980.jpg?imageslim/zlevel/3'
 const openingImage3 = 'https://klife.keyboard-man.com/wedding_invitation/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20260123172427_164_980.jpg?imageslim/zlevel/3'
@@ -616,15 +621,20 @@ const loadData = () => {
           contactInfo.value.sheFatherNumber = detailObj.sheFatherNumber || ''
           contactInfo.value.sheMotherNumber = detailObj.sheMotherNumber || ''
 
+          // 审核开关：detail.enableBlessing === true 才允许填写祝福
+          allowBlessing.value = detailObj.enableBlessing === true
+
           console.log('[联系电话] 新郎父亲电话:', contactInfo.value.heFatherNumber)
           console.log('[联系电话] 新郎母亲电话:', contactInfo.value.heMotherNumber)
           console.log('[联系电话] 新郎姐姐电话:', contactInfo.value.heSisterNumber)
           console.log('[联系电话] 新娘父亲电话:', contactInfo.value.sheFatherNumber)
           console.log('[联系电话] 新娘母亲电话:', contactInfo.value.sheMotherNumber)
+          console.log('[审核开关] enableBlessing:', allowBlessing.value)
         } catch (err) {
           console.error('[联系电话] 解析 detail 字段失败:', err)
         }
       }
+
 
       // 获取位置信息
       if (res.data.locationLon && res.data.locationLat) {
@@ -889,6 +899,15 @@ const submitForm = async () => {
     openid: openId,
     peopleCount: form.value.attend ? form.value.peopleCount : 0
   }
+
+  if (!allowBlessing.value) {
+    // 审核要求：关闭祝福收集
+    delete submitData.message
+  } else {
+    submitData.message = (form.value.message || '').trim()
+  }
+
+
 
   console.log('提交的数据:', submitData)
   console.log('form.attend:', form.value.attend)
